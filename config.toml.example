@@ -1,0 +1,37 @@
+[server]
+sso_jwt_secret = "example_secret"
+services_jwt_secret = "example_secret"
+telegram_token = "00000000:xxxxxxxx"
+
+[[users]]
+name = "john"
+email = "john@smith.io"
+telegram_id = 123456789
+
+[[users]]
+name = "sam"
+email = "sam@smith.io"
+telegram_id = 987654321
+
+[[tokens]]
+name = "local-pc"
+token = "example_token"
+
+[[tokens]]
+name = "my-server"
+token = "example_token"
+
+[[services]]
+name = "code-server"
+host = "code.example.com"
+users = [ "john" ]
+tokens = [ "local-pc", "my-server" ]
+bypass = [ "/static/", "/some-path/" ]
+
+
+[[services]]
+name = "filebox"
+host = "file.example.com"
+users = [ "john", "sam" ]
+tokens = [ "my-server" ]
+bypass = [ "/static/", "/share/" ]
