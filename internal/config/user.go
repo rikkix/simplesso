@@ -26,7 +26,7 @@ const (
 type User struct {
 	Name       string `toml:"name"`
 	Email      string `toml:"email"`
-	TelegramId int    `toml:"telegram_id"`
+	TelegramId int64    `toml:"telegram_id"`
 }
 
 // Clean and validate user data.

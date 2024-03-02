@@ -30,6 +30,7 @@ type Config struct {
 	Users    []User   `toml:"users"`
 	Tokens   []Token   `toml:"tokens"`
 	Services []Service `toml:"services"`
+	users	 map[string]*User
 }
 
 // Clean and validate config data.
@@ -46,6 +47,7 @@ func (c *Config) Clean() errors.TraceableError {
 			return err.From(ErrWrongUsersSection)
 		}
 		c.Users[i] = u
+		c.users[u.Name] = &c.Users[i]
 	}
 
 	for i, t := range c.Tokens {
@@ -75,7 +77,9 @@ func FromFile(path string) (*Config, errors.TraceableError) {
 		return nil, errors.New(e.Error()).From(ErrOpeningConfigFile)
 	}
 
-	config := Config{}
+	config := Config{
+		users: make(map[string]*User),
+	}
 	// Decode toml file.
 	dec := toml.NewDecoder(f)
 	e = dec.Decode(&config)
@@ -90,4 +94,8 @@ func FromFile(path string) (*Config, errors.TraceableError) {
 	}
 
 	return &config, nil
+}
+
+func (c *Config) FindUser(name string) *User {
+	return c.users[name]
 }
