@@ -90,3 +90,8 @@ func (w *Web) handleVerifyPost(c *fiber.Ctx) error {
 
 	return c.Redirect(redirect)
 }
+
+func (w *Web) handleLogout(c *fiber.Ctx) error {
+	c.ClearCookie("auth_token")
+	return c.Redirect("/")
+}

@@ -69,6 +69,7 @@ func (w *Web) RegisterRoutes() {
 	w.server.Get("/login", w.handleLogin)
 	w.server.Post("/login", w.handleLoginPost)
 	w.server.Post("/verify", w.handleVerifyPost)
+	w.server.Get("/logout", w.handleLogout)
 }
 
 // Start starts the web server.
