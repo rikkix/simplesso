@@ -28,6 +28,7 @@ type Server struct {
 	SsoJwtSecret 	string `toml:"sso_jwt_secret"`
 	ServicesJwt 	string `toml:"services_jwt_secret"`
 	TelegramToken 	string `toml:"telegram_token"`
+	CookieSecure	bool `toml:"cookie_secure"`
 
 	ssoSecretBytes 	[]byte
 	servicesSecretBytes []byte

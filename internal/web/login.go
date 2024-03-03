@@ -83,8 +83,9 @@ func (w *Web) handleVerifyPost(c *fiber.Ctx) error {
 			Name: "auth_token",
 			Value: token,
 			Expires: exp,
-			// SameSite: "Strict",
-			// HTTPOnly: true,
+			SameSite: "Lax",
+			HTTPOnly: true,
+			Secure: w.config.Server.CookieSecure,
 		})
 
 	return c.Redirect(redirect)
