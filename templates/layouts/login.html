@@ -43,6 +43,13 @@
                   in</button>
               </div>
             </form>
+            {{ if .github_client_id }}
+            <hr>
+            <div class="d-grid">
+              <a href="https://github.com/login/oauth/authorize?client_id={{ .github_client_id }}" class="btn btn-secondary btn-login text-uppercase fw-bold">Sign in with
+                GitHub</a>
+            </div>  
+            {{ end }}
           </div>
         </div>
       </div>

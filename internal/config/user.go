@@ -25,7 +25,8 @@ const (
 // telegram_id = 987654321
 type User struct {
 	Name       string `toml:"name"`
-	Email      string `toml:"email"`
+	// Email      string `toml:"email"`
+	GitHub 		string `toml:"github"`
 	TelegramId int64    `toml:"telegram_id"`
 }
 
@@ -36,15 +37,17 @@ func (u *User) Clean() errors.TraceableError {
 		return errors.New(ErrEmptyUserName)
 	}
 
-	u.Email = strings.TrimSpace(u.Email)
-	u.Email = strings.ToLower(u.Email)
-	if u.Email == "" {
-		return errors.New(ErrEmptyUserEmail)
-	}
+	// u.Email = strings.TrimSpace(u.Email)
+	// u.Email = strings.ToLower(u.Email)
+	// if u.Email == "" {
+	// 	return errors.New(ErrEmptyUserEmail)
+	// }
 
-	if u.TelegramId == 0 {
-		return errors.New(ErrEmptyUserTelegramId)
-	}
+	u.GitHub = strings.TrimSpace(strings.ToLower(u.GitHub))
+
+	// if u.TelegramId == 0 {
+	// 	return errors.New(ErrEmptyUserTelegramId)
+	// }
 
 	return nil
 }

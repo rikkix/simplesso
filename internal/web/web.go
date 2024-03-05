@@ -74,9 +74,13 @@ func (w *Web) RegisterRoutes() {
 	w.server.Post("/verify", w.handleVerifyPost)
 	w.server.Get("/logout", w.handleLogout)
 
+	w.server.Get("/oauth/github", w.handleOauthGitHub)
+
 	w.server.Get("/auth-cgi/auth", w.handleAuthCGIAuth)
 	w.server.Get("/auth-cgi/login", w.handleAuthCGILogin)
 	w.server.Post("/auth-cgi/callback", w.handleAuthCGICallbackPost)
+
+
 }
 
 // Start starts the web server.
