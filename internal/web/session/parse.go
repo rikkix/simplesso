@@ -74,10 +74,11 @@ func (sp *CGISessionParser) ParseSession(ctx *fiber.Ctx) *Session {
 		UserAgent:  ctx.Get(sp.UAHead),
 		Authorized: false,
 	}
-	sub, err := sp.Auther.ValidateToken(ctx.Cookies(sp.TokenCookieName), string(ctx.Hostname()))
+	sub, exp, err := sp.Auther.ValidateToken(ctx.Cookies(sp.TokenCookieName), string(ctx.Hostname()))
 	if err == nil {
 		s.Authorized = true
 		s.Sub = sub
+		s.Exp = exp
 	}
 
 	return s
@@ -98,10 +99,11 @@ func (sp *SSOSessionParser) ParseSession(ctx *fiber.Ctx) *Session {
 		UserAgent:  ctx.Get(fiber.HeaderUserAgent),
 		Authorized: false,
 	}
-	sub, err := sp.Auther.ValidateToken(ctx.Cookies(sp.TokenCookieName), ctx.Hostname())
+	sub, exp, err := sp.Auther.ValidateToken(ctx.Cookies(sp.TokenCookieName), ctx.Hostname())
 	if err == nil {
 		s.Authorized = true
 		s.Sub = sub
+		s.Exp = exp
 	}
 	return s
 }

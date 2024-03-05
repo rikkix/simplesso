@@ -38,7 +38,7 @@ func NewReqID() string {
 	return crypto.RandomString(16)
 }
 
-func (m *MemDB) NewReq(username string, dur int) string {
+func (m *MemDB) NewReq(username string, dur time.Duration) string {
 	req := LoginReq{
 		ID: NewReqID(),
 		Username: username,

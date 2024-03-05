@@ -6,7 +6,7 @@ type LoginReq struct {
 	ID string
 	Username string
 	Expiry time.Time
-	Dur int // secs
+	Dur time.Duration
 	Confirmed bool
 	Code string
 }
