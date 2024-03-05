@@ -51,9 +51,9 @@ func (w *Web) handleIndex(c *fiber.Ctx) error {
 	}
 	return c.Render("callback_form", fiber.Map{
 		"callback": callback,
-		"token": token,
+		"token":    token,
 	})
-	
+
 }
 
 func (w *Web) handleLogin(c *fiber.Ctx) error {
@@ -61,8 +61,9 @@ func (w *Web) handleLogin(c *fiber.Ctx) error {
 	redirect := c.Query("redirect")
 
 	return c.Render("login", fiber.Map{
-		"msg":      msg,
-		"redirect": redirect,
+		"msg":              msg,
+		"redirect":         redirect,
+		"github_client_id": w.config.GitHub.ClientID,
 	})
 }
 
@@ -120,12 +121,9 @@ func (w *Web) handleVerifyPost(c *fiber.Ctx) error {
 			HTTPOnly: true,
 		})
 
-	re_host := url.ExtractHost(redirect)
-	if re_host != "" && w.config.FindService(re_host) == nil {
-		redirect = "/"
-	}
-
-	return c.Redirect(redirect)
+	return c.Redirect(url.AddQueries("/", map[string]string{
+		"redirect": redirect,
+	}))
 }
 
 func (w *Web) handleLogout(c *fiber.Ctx) error {
