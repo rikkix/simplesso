@@ -42,8 +42,14 @@ func (w *Web) handleLogin(c *fiber.Ctx) error {
 func (w *Web) handleLoginPost(c *fiber.Ctx) error {
 	redirect := c.Query("redirect")
 	username := c.FormValue("username")
+	remember := c.FormValue("remember") == "on"
 	username = strings.ToLower(strings.TrimSpace(username))
 	user := w.config.FindUser(username)
+
+	dur := 6 * time.Hour
+	if remember {
+		dur = 30 * 24 * time.Hour
+	}
 
 	reqid := ""
 	if user != nil {
