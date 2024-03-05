@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Login Callback</title>
+    </head>
+    <body>
+        <h1>
+            You have successfully logged in. We are redirecting you to the original page.
+        </h1>
+        <form action="{{ .callback }}" method="post">
+            <input type="hidden" name="token" value="{{ .token }}">
+            <input type="submit" value="Continue">
+        </form>
+        <script>
+            document.querySelector('form').submit();
+        </script>
+    </body>

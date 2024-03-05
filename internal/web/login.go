@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -13,20 +12,48 @@ import (
 
 func (w *Web) handleIndex(c *fiber.Ctx) error {
 	ssn := w.session(c)
-	redirect := c.Query("redirect", "/")
+	authed := ssn.Authorized
+	redirect := c.Query("redirect", "")
 
-	if !ssn.Authorized {
-		args := map[string]string{
-			"msg": "Please login to continue.",
-			"redirect": redirect,
-		}
-
+	if !authed {
 		return c.Redirect(
-			url.AddQueries("/login", args),
+			url.AddQueries("/login", map[string]string{
+				"msg":      "Please login to continue.",
+				"redirect": redirect,
+			}),
 		)
 	}
 
-	return c.SendString("Welcome, "+ssn.Sub+"!")
+	re_host := url.ExtractHost(redirect)
+	service := w.config.FindService(re_host)
+	if redirect != "" {
+		if re_host == "" && redirect[0] != '/' {
+			redirect = "/"
+		}
+		if re_host != "" && service == nil {
+			redirect = "/"
+		}
+	}
+
+	if redirect == "" {
+		return c.SendString("Welcome, " + ssn.Sub + "!")
+	}
+
+	if redirect[0] == '/' {
+		return c.Redirect(redirect)
+	}
+
+	callback := "https://" + service.Host + "/auth-cgi/callback"
+	token, err := w.ssnParser.CGIAuther().GenerateToken(re_host, ssn.Sub, ssn.Exp)
+	if err != nil {
+		w.logger.Error("Error generating token: %s", err)
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+	return c.Render("callback_form", fiber.Map{
+		"callback": callback,
+		"token": token,
+	})
+	
 }
 
 func (w *Web) handleLogin(c *fiber.Ctx) error {
@@ -34,7 +61,7 @@ func (w *Web) handleLogin(c *fiber.Ctx) error {
 	redirect := c.Query("redirect")
 
 	return c.Render("login", fiber.Map{
-		"msg": msg,
+		"msg":      msg,
 		"redirect": redirect,
 	})
 }
@@ -53,7 +80,7 @@ func (w *Web) handleLoginPost(c *fiber.Ctx) error {
 
 	reqid := ""
 	if user != nil {
-		reqid = w.loginreqdb.NewReq(utils.CopyString(username), 20)
+		reqid = w.loginreqdb.NewReq(utils.CopyString(username), dur)
 		go w.tgbot.SendConfirmaion(user.TelegramId, reqid)
 	} else {
 		reqid = loginreq.NewReqID()
@@ -61,7 +88,7 @@ func (w *Web) handleLoginPost(c *fiber.Ctx) error {
 
 	return c.Render("login_verify", fiber.Map{
 		"redirect": redirect,
-		"reqid": reqid,
+		"reqid":    reqid,
 		"username": username,
 	})
 }
@@ -73,11 +100,11 @@ func (w *Web) handleVerifyPost(c *fiber.Ctx) error {
 	succ, loginreq := w.loginreqdb.Finish(reqid, code)
 	if !succ {
 		return c.Redirect(url.AddQueries("/login", map[string]string{
-			"msg": "Error verifying code. Please try again.",
+			"msg":      "Error verifying code. Please try again.",
+			"redirect": redirect,
 		}))
 	}
-	exp := time.Now().Add(time.Second * time.Duration(loginreq.Dur))
-	fmt.Println("loginreq.Username: ", loginreq.Username)
+	exp := time.Now().Add(loginreq.Dur)
 	token, err := w.ssnParser.SSOAuther().GenerateToken(loginreq.Username, w.config.Server.SsoHost, exp)
 	if err != nil {
 		w.logger.Error("Error generating token: %s", err)
@@ -86,13 +113,17 @@ func (w *Web) handleVerifyPost(c *fiber.Ctx) error {
 
 	c.Cookie(
 		&fiber.Cookie{
-			Name: "auth_token",
-			Value: token,
-			Expires: exp,
+			Name:     "auth_token",
+			Value:    token,
+			Expires:  exp,
 			SameSite: "Lax",
 			HTTPOnly: true,
-			Secure: w.config.Server.CookieSecure,
 		})
+
+	re_host := url.ExtractHost(redirect)
+	if re_host != "" && w.config.FindService(re_host) == nil {
+		redirect = "/"
+	}
 
 	return c.Redirect(redirect)
 }

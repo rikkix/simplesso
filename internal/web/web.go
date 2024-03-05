@@ -37,8 +37,11 @@ func New(c *config.Config, l log.Logger, a *fiber.App) *Web {
 	l.Info("Creating new web server...")
 	if a == nil {
 		l.Info("Empty fiber app, creating new one...")
+		eng := html.New(c.Server.WebPath + "layouts", ".html")
+		l.Warn("Reloading is enabled (test purpose)")
+		eng.Reload(true)
 		a = fiber.New(fiber.Config{
-			Views: html.New(c.Server.WebPath + "layouts", ".html"),
+			Views: eng,
 		})
 	}
 	lrq := loginreq.NewMemDB(30, 5 * time.Minute)
@@ -70,6 +73,10 @@ func (w *Web) RegisterRoutes() {
 	w.server.Post("/login", w.handleLoginPost)
 	w.server.Post("/verify", w.handleVerifyPost)
 	w.server.Get("/logout", w.handleLogout)
+
+	w.server.Get("/auth-cgi/auth", w.handleAuthCGIAuth)
+	w.server.Get("/auth-cgi/login", w.handleAuthCGILogin)
+	w.server.Post("/auth-cgi/callback", w.handleAuthCGICallbackPost)
 }
 
 // Start starts the web server.
