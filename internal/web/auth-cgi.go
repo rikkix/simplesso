@@ -57,6 +57,7 @@ func (w *Web) handleAuthCGICallbackPost(c *fiber.Ctx) error {
 		Value: token,
 		Expires: exp,
 		SameSite: "Lax",
+		HTTPOnly: true,
 	})
 
 	if !url.SameHost(url.ExtractHost(redirect), c.Hostname()) {
