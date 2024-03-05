@@ -31,10 +31,14 @@ type Config struct {
 	Tokens   []Token   `toml:"tokens"`
 	Services []Service `toml:"services"`
 	users	 map[string]*User
+	services map[string]*Service
 }
 
 // Clean and validate config data.
 func (c *Config) Clean() errors.TraceableError {
+	c.users = make(map[string]*User)
+	c.services = make(map[string]*Service)
+	
 	var err errors.TraceableError
 	err = c.Server.Clean()
 	if err != nil {
@@ -64,6 +68,7 @@ func (c *Config) Clean() errors.TraceableError {
 			return err.From(ErrWrongServicesSection)
 		}
 		c.Services[i] = s
+		c.services[s.Host] = &c.Services[i]
 	}
 
 	return nil
@@ -78,7 +83,6 @@ func FromFile(path string) (*Config, errors.TraceableError) {
 	}
 
 	config := Config{
-		users: make(map[string]*User),
 	}
 	// Decode toml file.
 	dec := toml.NewDecoder(f)
@@ -98,4 +102,8 @@ func FromFile(path string) (*Config, errors.TraceableError) {
 
 func (c *Config) FindUser(name string) *User {
 	return c.users[name]
+}
+
+func (c *Config) FindService(host string) *Service {
+	return c.services[host]
 }
