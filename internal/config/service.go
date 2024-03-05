@@ -91,3 +91,14 @@ func (s *Service) IsPathAllowed(path string) bool {
 	}
 	return false
 }
+
+func (s *Service) IsBypass(path string) bool {
+	if len(s.Bypass) == 0 { return false }
+	path = strings.ToLower(strings.TrimSpace(path))
+	for _, p := range s.Bypass {
+		if strings.HasPrefix(path, p) {
+			return true
+		}
+	}
+	return false
+}

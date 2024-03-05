@@ -13,6 +13,10 @@ func (w *Web) handleAuthCGIAuth(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
+	if service.IsBypass(c.Get("X-Forwarded-Uri")) {
+		return c.SendStatus(fiber.StatusOK)
+	}
+
 	ssn := w.session(c)
 	if ssn.Authorized && service.IsUserAllowed(ssn.Sub) {
 		return c.SendStatus(fiber.StatusOK)
