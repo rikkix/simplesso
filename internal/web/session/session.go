@@ -1,6 +1,8 @@
 package session
 
 import (
+	"time"
+
 	"github.com/valyala/fasthttp"
 )
 
@@ -11,6 +13,7 @@ type Session struct {
 	UserAgent string
 	Authorized bool
 	Sub string
+	Exp time.Time
 }
 
 func (s *Session) Query(key string) []byte {
