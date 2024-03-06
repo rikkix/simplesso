@@ -56,8 +56,16 @@ func (w *Web) handleIndex(c *fiber.Ctx) error {
 		return c.Redirect(redirect)
 	}
 
+	// If the user is not allowed, return 403 Forbidden
+	if !service.IsUserAllowed(ssn.Sub) {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
 	// Redirect to the service page
 	callback := "https://" + service.Host + "/auth-cgi/callback"
+	callback = url.AddQueries(callback, map[string]string{
+		"redirect": redirect,
+	})
 	// Generate token for the service
 	token, err := w.ssnParser.CGIAuther().GenerateToken(re_host, ssn.Sub, ssn.Exp)
 	if err != nil {
