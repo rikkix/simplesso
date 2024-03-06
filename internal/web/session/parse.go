@@ -20,16 +20,16 @@ func NewSessionParser(conf *config.Server) *SessionParser {
 	return &SessionParser{
 		SsoHost: conf.SsoHost,
 		cgp: &CGISessionParser{
-			MethodHead: "X-Method",
-			SchemeHead: "X-Scheme",
-			URIHead: "X-URI",
-			IPHead: "X-Real-IP",
-			UAHead: "X-User-Agent",
+			MethodHead: "X-Forwarded-Method",
+			SchemeHead: fiber.HeaderXForwardedProto,
+			URIHead: "X-Forwarded-Uri",
+			IPHead: fiber.HeaderXForwardedFor,
+			UAHead: fiber.HeaderUserAgent,
 			TokenCookieName: "auth_token",
 			Auther: crypto.NewAuth(conf.GetServicesSecretBytes()),
 		},
 		ssp: &SSOSessionParser{
-			IPHead: "X-Real-IP",
+			IPHead: fiber.HeaderXForwardedFor,
 			TokenCookieName: "auth_token",
 			Auther: crypto.NewAuth(conf.GetSsoSecretBytes()),
 		},
