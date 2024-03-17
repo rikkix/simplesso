@@ -10,23 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v4
         with:
           go-version: '1.22'
       - name: Build
-        uses: crazy-max/ghaction-xgo@v2
-        with:
-          xgo_version: latest
-          go_version: '1.22'
-          dest: build
-          pkg: cmd/simplesso
-          prefix: simplesso
-          targets: linux/amd64,linux/arm64,darwin/arm64
-          v: true
-          x: true
-          ldflags: -s -w
+        run: go build -v -o build/simplesso ./cmd/simplesso
       - name: Create Release
         uses: actions/create-release@v1.0.0
         id: create_release
