@@ -1,36 +1,35 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	flog "github.com/gofiber/fiber/v2/log"
 	"github.com/rikkix/simplesso/internal/config"
 	"github.com/rikkix/simplesso/internal/web"
-
-	"github.com/qinains/fastergoding"
-)
-
-const (
-	DefaultConfigPath = "config.toml"
 )
 
 func main() {
-	fastergoding.Run("./cmd/simplesso") // hot reload
+	args := os.Args
+	if len(args) < 2 {
+		fmt.Println("Usage: simplesso <config file>")
+		os.Exit(1)
+	}
+	configPath := args[1]
 
 	log := flog.DefaultLogger()
-	log.SetLevel(flog.LevelDebug)
+	log.SetLevel(flog.LevelWarn)
 
 	var err error
 
 	// Load the configuration.
-	config, err := config.FromFile(DefaultConfigPath)
+	config, err := config.FromFile(configPath)
 	if err != nil {
 		log.Fatalf("Error loading configuration: %s", err)
 	}
 
 	// Create a new web server.
 	web := web.New(config, log, nil)
-
-	// Register the routes.
-	web.RegisterRoutes()
 
 	// Start the web server.
 	web.Start()

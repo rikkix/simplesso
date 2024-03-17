@@ -65,6 +65,7 @@ func (w *Web) RegisterRoutes() {
 	if w.routeRegistered {
 		return
 	}
+	w.routeRegistered = true
 	w.logger.Info("Registering routes...")
 
 	// SSO Login routes
@@ -85,6 +86,9 @@ func (w *Web) RegisterRoutes() {
 
 // Start starts the web server.
 func (w *Web) Start() {
+	w.logger.Warn("Registering routes...")
+	w.RegisterRoutes()
+	
 	w.logger.Warn("Starting telegram bot...")
 	go w.tgbot.StartPolling()
 
