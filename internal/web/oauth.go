@@ -102,6 +102,7 @@ func (w *Web) handleOauthGitHub(c *fiber.Ctx) error {
 			Expires:  exp,
 			SameSite: "Lax",
 			HTTPOnly: true,
+			Secure: true,
 		})
 
 	return c.Redirect(url.AddQueries("/", map[string]string{

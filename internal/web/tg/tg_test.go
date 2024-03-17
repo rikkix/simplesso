@@ -20,7 +20,5 @@ func TestTG_SendConfirmaion(t *testing.T) {
 	err = tg.SendConfirmaion(int64(chatid), "test-reqid")
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	
+	}	
 }
