@@ -18,7 +18,7 @@ func main() {
 	configPath := args[1]
 
 	log := flog.DefaultLogger()
-	log.SetLevel(flog.LevelWarn)
+	log.SetLevel(flog.LevelTrace)
 
 	var err error
 

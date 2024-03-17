@@ -67,7 +67,7 @@ func (w *Web) handleIndex(c *fiber.Ctx) error {
 		"redirect": redirect,
 	})
 	// Generate token for the service
-	token, err := w.ssnParser.CGIAuther().GenerateToken(re_host, ssn.Sub, ssn.Exp)
+	token, err := w.ssnParser.CGIAuther().GenerateToken(ssn.Sub, re_host, ssn.Exp)
 	if err != nil {
 		w.logger.Error("Error generating token: %s", err)
 		return c.SendStatus(fiber.StatusInternalServerError)

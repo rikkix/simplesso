@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/rikkix/simplesso/utils/url"
 )
 
@@ -43,7 +44,7 @@ func (w *Web) handleAuthCGIAuth(c *fiber.Ctx) error {
 // handleAuthCGILogin handles the login request.
 // It will redirect to the SSO page for further actions.
 func (w *Web) handleAuthCGILogin(c *fiber.Ctx) error {
-	forwardedURI := c.Get("X-Forwarded-Uri")
+	forwardedURI := c.Query("redirect")
 	rurl := "https://" + c.Hostname() + forwardedURI
 
 	ssourl := "https://" + w.config.Server.SsoHost + "/"
@@ -59,8 +60,10 @@ func (w *Web) handleAuthCGILogin(c *fiber.Ctx) error {
 func (w *Web) handleAuthCGICallbackPost(c *fiber.Ctx) error {
 	token := c.FormValue("token")
 	redirect := c.Query("redirect")
+	log.Tracef("Host: %s", c.Hostname())
 	_,exp,err := w.ssnParser.CGIAuther().ValidateToken(token, c.Hostname())
 	if err != nil {
+		w.logger.Errorf("Error validating token: %s", err)
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 

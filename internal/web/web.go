@@ -17,7 +17,7 @@ type Web struct {
 	// Config is the configuration for the web server.
 	config *config.Config
 	// Logger is the logger for the web server.
-	logger log.Logger
+	logger log.CommonLogger
 	// Server is the web server.
 	server *fiber.App
 	
@@ -33,7 +33,7 @@ type Web struct {
 }
 
 // New creates a new Web instance.
-func New(c *config.Config, l log.Logger, a *fiber.App) *Web {
+func New(c *config.Config, l log.CommonLogger, a *fiber.App) *Web {
 	l.Info("Creating new web server...")
 	if a == nil {
 		l.Info("Empty fiber app, creating new one...")
