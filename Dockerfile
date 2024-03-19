@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM golang:1.22-bookworm as build-stage
 
 WORKDIR /app
@@ -18,6 +16,6 @@ COPY --from=build-stage /simplesso /simplesso
 
 EXPOSE 5000
 
-CMD ["/simplesso"]
+WORKDIR /app
 
-
+CMD ["/simplesso", "-listen", "0.0.0.0:5000"]
