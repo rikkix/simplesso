@@ -4,10 +4,9 @@ FROM golang:1.22-bookworm as build-stage
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
-
 COPY . .
+
+RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -o /simplesso ./cmd/simplesso
 
 
