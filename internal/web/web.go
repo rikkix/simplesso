@@ -30,6 +30,9 @@ type Web struct {
 
 	// route_registered is a flag to indicate if the routes have been registered.
 	routeRegistered bool
+
+	// templatePath is the path to the templates.
+	templatePath string
 }
 
 // New creates a new Web instance.
@@ -60,6 +63,7 @@ func New(c *config.Config, templatePath string,
 		loginreqdb:      lrq,
 		tgbot:           tbot,
 		routeRegistered: false,
+		templatePath:    templatePath,
 	}
 }
 
@@ -85,6 +89,9 @@ func (w *Web) RegisterRoutes() {
 	w.server.Get("/auth-cgi/auth", w.handleAuthCGIAuth)
 	w.server.Get("/auth-cgi/login", w.handleAuthCGILogin)
 	w.server.Post("/auth-cgi/callback", w.handleAuthCGICallbackPost)
+
+	// Static files
+	w.server.Static("/static", path.Join(w.templatePath, "static"))
 }
 
 // Start starts the web server.
