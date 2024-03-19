@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -10,26 +11,50 @@ import (
 )
 
 func main() {
-	args := os.Args
-	if len(args) < 2 {
-		fmt.Println("Usage: simplesso <config file>")
-		os.Exit(1)
+	// Parse the command line flags.
+	configPath := flag.String("config", "config.toml", "Path to the configuration file")
+	templatePath := flag.String("templates", "templates", "Path to the templates directory")
+	logLevel := flag.String("loglevel", "info", "Log level (trace, debug, info, warn, error, fatal, panic)")
+	reloadTemplates := flag.Bool("reload", false, "Reload templates on change")
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [options]\n", os.Args[0])
+		flag.PrintDefaults()
 	}
-	configPath := args[1]
+	flag.Parse()
 
 	log := flog.DefaultLogger()
-	log.SetLevel(flog.LevelTrace)
+
+	var ll flog.Level
+	switch *logLevel {
+	case "trace":
+		ll = flog.LevelTrace
+	case "debug":
+		ll = flog.LevelDebug
+	case "info":
+		ll = flog.LevelInfo
+	case "warn":
+		ll = flog.LevelWarn
+	case "error":
+		ll = flog.LevelError
+	case "fatal":
+		ll = flog.LevelFatal
+	case "panic":
+		ll = flog.LevelPanic
+	default:
+		log.Fatalf("Invalid log level: %s", *logLevel)
+	}
+	log.SetLevel(ll)
 
 	var err error
 
 	// Load the configuration.
-	config, err := config.FromFile(configPath)
+	config, err := config.FromFile(*configPath)
 	if err != nil {
 		log.Fatalf("Error loading configuration: %s", err)
 	}
 
 	// Create a new web server.
-	web := web.New(config, log, nil)
+	web := web.New(config, *templatePath , *reloadTemplates ,log, nil)
 
 	// Start the web server.
 	web.Start()

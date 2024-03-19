@@ -1,6 +1,7 @@
 package web
 
 import (
+	"path"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +13,6 @@ import (
 	"github.com/rikkix/simplesso/internal/web/tg"
 )
 
-
 type Web struct {
 	// Config is the configuration for the web server.
 	config *config.Config
@@ -20,7 +20,7 @@ type Web struct {
 	logger log.CommonLogger
 	// Server is the web server.
 	server *fiber.App
-	
+
 	// ssnParser is the session parser for the web server.
 	ssnParser *session.SessionParser
 	// loginreqdb is the login request database for the web server.
@@ -33,29 +33,32 @@ type Web struct {
 }
 
 // New creates a new Web instance.
-func New(c *config.Config, l log.CommonLogger, a *fiber.App) *Web {
+func New(c *config.Config, templatePath string,
+	reload bool, l log.CommonLogger, a *fiber.App) *Web {
 	l.Info("Creating new web server...")
 	if a == nil {
 		l.Info("Empty fiber app, creating new one...")
-		eng := html.New(c.Server.WebPath + "layouts", ".html")
-		l.Warn("Reloading is enabled (test purpose)")
-		eng.Reload(true)
+		eng := html.New(path.Join(templatePath, "layouts"), ".html")
+		if reload {
+			l.Warn("Reloading is enabled (test purpose)")
+			eng.Reload(true)
+		}
 		a = fiber.New(fiber.Config{
 			Views: eng,
 		})
 	}
-	lrq := loginreq.NewMemDB(30, 5 * time.Minute)
+	lrq := loginreq.NewMemDB(30, 5*time.Minute)
 	tbot, err := tg.New(c.Server.TelegramToken, lrq, l)
 	if err != nil {
 		l.Fatal("Error creating telegram bot: %s", err)
 	}
 	return &Web{
-		config: c,
-		logger: l,
-		server: a,
-		ssnParser: session.NewSessionParser(&c.Server),
-		loginreqdb: lrq,
-		tgbot: tbot,
+		config:          c,
+		logger:          l,
+		server:          a,
+		ssnParser:       session.NewSessionParser(&c.Server),
+		loginreqdb:      lrq,
+		tgbot:           tbot,
 		routeRegistered: false,
 	}
 }
@@ -86,9 +89,8 @@ func (w *Web) RegisterRoutes() {
 
 // Start starts the web server.
 func (w *Web) Start() {
-	w.logger.Warn("Registering routes...")
 	w.RegisterRoutes()
-	
+
 	w.logger.Warn("Starting telegram bot...")
 	go w.tgbot.StartPolling()
 
