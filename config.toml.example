@@ -1,37 +1,58 @@
 [server]
-sso_jwt_secret = "example_secret"
-services_jwt_secret = "example_secret"
-telegram_token = "00000000:xxxxxxxx"
+# The address and port to listen on
+listen_address = "localhost:5000"
+
+# The host name of the sso service
+sso_host = "auth.example.com"
+
+# JWT secret for the sso service
+# Recommended to leave it empty, the secret would be generated automatically
+#sso_jwt_secret = "example_sso_jwt_secret"
+
+# JWT secret for the services
+# Recommended to leave it empty, the secret would be generated automatically
+#services_jwt_secret = "example_services_jwt_secret"
+
+# The token of Telegram bot
+telegram_token = "example_telegram_token"
+
+[github]
+# The client id of the GitHub OAuth application
+client_id = "example_client_id"
+
+# The client secret of the GitHub OAuth application
+client_secret = "example_client_secret"
 
 [[users]]
-name = "john"
-email = "john@smith.io"
+# The name of the user
+name = "your_name"
+
+# The github username of the user
+github = "your_github_username"
+
+# The telegram id of the user
 telegram_id = 123456789
 
-[[users]]
-name = "sam"
-email = "sam@smith.io"
-telegram_id = 987654321
-
 [[tokens]]
-name = "local-pc"
-token = "example_token"
+# The name of the token
+name = "example_token_name"
 
-[[tokens]]
-name = "my-server"
+# The token
 token = "example_token"
 
 [[services]]
-name = "code-server"
-host = "code.example.com"
-users = [ "john" ]
-tokens = [ "local-pc", "my-server" ]
-bypass = [ "/static/", "/some-path/" ]
+# The name of the service
+name = "example_service"
 
+# The host of the service
+host = "app.example.com"
 
-[[services]]
-name = "filebox"
-host = "file.example.com"
-users = [ "john", "sam" ]
-tokens = [ "my-server" ]
-bypass = [ "/static/", "/share/" ]
+# Allowed users
+users = [ "your_name" ]
+
+# Allowed tokens
+tokens = [ "example_token_name" ]
+
+# The prefix of pathes which do not need to be authenticated
+bypass = [ "/static/", "/public/" ]
+
