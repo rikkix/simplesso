@@ -18,12 +18,12 @@ const (
 // example:
 // ==============================
 // listen_address = "localhost:5000"
-// sso_jwt_secret = "example_secret"
-// services_jwt_secret = "example_secret"
-// telegram_token = "00000000:xxxxxxxx"
+// sso_host = "auth.example.com"
+// sso_jwt_secret = "example_sso_jwt_secret"
+// services_jwt_secret = "example_services_jwt_secret"
+// telegram_token = "example_telegram_token"
 type Server struct {
 	ListenAddress 	string `toml:"listen_address"`
-	WebPath 		string `toml:"web_path"`
 	SsoHost			string `toml:"sso_host"`
 	SsoJwtSecret 	string `toml:"sso_jwt_secret"`
 	ServicesJwt 	string `toml:"services_jwt_secret"`
@@ -38,11 +38,6 @@ func (s *Server) Clean() errors.TraceableError {
 	s.ListenAddress = strings.TrimSpace(s.ListenAddress)
 	if s.ListenAddress == "" {
 		s.ListenAddress = "127.0.0.1:5000"
-	}
-
-	s.WebPath = strings.TrimSpace(s.WebPath)
-	if s.WebPath == "" {
-		s.WebPath = "templates/"
 	}
 
 	s.SsoHost = strings.TrimSpace(s.SsoHost)

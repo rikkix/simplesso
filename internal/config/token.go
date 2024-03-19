@@ -17,7 +17,7 @@ const (
 // Struct Token for [[tokens]] section in config file.
 // example:
 // ==============================
-// name = "example-name"
+// name = "example_token_name"
 // token = "example_token"
 type Token struct {
 	Name  string `toml:"name"`

@@ -20,12 +20,11 @@ const (
 // Struct User for [[users]] section in config file.
 // example:
 // ==============================
-// name = "sam"
-// email = "sam@smith.io"
-// telegram_id = 987654321
+// name = "your_name"
+// github = "your_github_username"
+// telegram_id = 123456789
 type User struct {
 	Name       string `toml:"name"`
-	// Email      string `toml:"email"`
 	GitHub 		string `toml:"github"`
 	TelegramId int64    `toml:"telegram_id"`
 }
