@@ -1,0 +1,12 @@
+[Unit]
+Description=Simple SSO Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/simplesso
+ExecStart=/usr/bin/simplesso -config /opt/simplesso/config.toml -templates /opt/simplesso/templates
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
